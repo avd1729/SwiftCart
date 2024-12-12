@@ -1,22 +1,47 @@
 package com.example.SwiftCart.service.product;
 
 import com.example.SwiftCart.exceptions.ProductNotFoundException;
+import com.example.SwiftCart.model.Category;
 import com.example.SwiftCart.model.Product;
+import com.example.SwiftCart.repository.CategoryRepository;
 import com.example.SwiftCart.repository.ProductRepository;
+import com.example.SwiftCart.request.AddProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public Product addProduct(Product product) {
-        return null;
+    public Product addProduct(AddProductRequest product) {
+        // check if the category is found in the DB.
+
+        Category category = Optional.ofNullable(categoryRepository.findByName(product.getCategory().getName()))
+                .orElseGet(()-> {
+                    Category newCategory = new Category(product.getCategory().getName());
+                    return categoryRepository.save(newCategory);
+                });
+
+        product.setCategory(category);
+        return productRepository.save(createProduct(product, category));
+    }
+
+    private Product createProduct(AddProductRequest product, Category category) {
+        return new Product(
+                product.getName(),
+                product.getBrand(),
+                product.getPrice(),
+                product.getInventory(),
+                product.getDescription(),
+                category
+        );
     }
 
     @Override
