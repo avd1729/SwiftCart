@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
 
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public Product addProduct(Product product) {
@@ -60,7 +60,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductByName(String productName) {
-        return List.of();
+        return productRepository.findByName(productName);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductByBrandAndName(String brand, String productName) {
-        return List.of();
+        return productRepository.findByBrandAndName(brand, productName);
     }
 
     @Override
@@ -100,6 +100,6 @@ public class ProductService implements IProductService {
 
     @Override
     public Long countProductByBrandAndName(String brand, String productName) {
-        return 0L;
+        return productRepository.countByBrandAndName(brand, productName);
     }
 }
